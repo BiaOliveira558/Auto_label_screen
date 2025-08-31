@@ -1,0 +1,17 @@
+﻿# Ambiente
+.venv/
+.env
+
+# Python/Jupyter (se for o caso)
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# IDE/lixo de sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# A PASTA QUE VOCÊ QUER IGNORAR
+teste/
