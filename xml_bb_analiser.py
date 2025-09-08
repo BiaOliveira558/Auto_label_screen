@@ -10,7 +10,25 @@ def extract_clickable_nodes(xml_file):
 
     def find_clickable_nodes(node):
         
-        if node.get("class") == "android.widget.ImageView" and node.get("resource-id") == "android:id/navigationBarBackground":   
+        if (
+        node.get("index") == "0"
+    and node.get("text") == ""
+    and node.get("resource-id") == ""
+    and node.get("class") == "android.widget.ImageView"
+    and node.get("package") == "com.google.android.apps.classroom"
+    and node.get("content-desc") == ""
+    and node.get("checkable") == "false"
+    and node.get("checked") == "false"
+    and node.get("clickable") == "false"
+    and node.get("enabled") == "true"
+    and node.get("focusable") == "true"
+    and node.get("focused") == "false"
+    and node.get("scrollable") == "false"
+    and node.get("long-clickable") == "false"
+    and node.get("password") == "false"
+    and node.get("selected") == "false"
+    and node.get("bounds") == "[0,65][158,223]"):
+            
             clickable_nodes.append(node)
 
         for child in node.findall("node"):
@@ -55,8 +73,8 @@ def draw_bounding_boxes(image_path, xml_file, output_path="C:/Users/bob/Document
 
 # Caminhos dos arquivos
 
-image_path = "C:/Users/bob/Documents/20250615_214403.png"
-xml_file = "C:/Users/bob/Documents/20250615_214403.xml"
+image_path = r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\20250615_215132.png"
+xml_file = r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\20250615_215132.xml"
 
 # Executar o script para desenhar os bounding boxes e redimensionar a imagem
 draw_bounding_boxes(image_path, xml_file, scale_percent=20)  # Resize para 50% do tamanho original
