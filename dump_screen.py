@@ -6,8 +6,8 @@ from datetime import datetime
 
 def capture_screen():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    image_name = f"C:/Users/bob/Documents/AutoLabelScreen/detect_element_screen/tests/{timestamp}.png"
-    dump_name = f"/Users/bob/Documents/AutoLabelScreen/detect_element_screen/tests/{timestamp}.xml"
+    image_name = f"C:/Users/bob/Documents/AutoLabelScreen/detect_element_screen/teste/{timestamp}.png"
+    dump_name = f"/Users/bob/Documents/AutoLabelScreen/detect_element_screen/teste/{timestamp}.xml"
 
     # Captura de tela
     os.system("adb shell screencap -p /sdcard/screenshot.png")

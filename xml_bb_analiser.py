@@ -11,24 +11,24 @@ def extract_clickable_nodes(xml_file):
     def find_clickable_nodes(node):
         
         if (
-        node.get("index") == "0"
-    and node.get("text") == ""
-    and node.get("resource-id") == ""
-    and node.get("class") == "android.widget.ImageView"
-    and node.get("package") == "com.google.android.apps.classroom"
-    and node.get("content-desc") == ""
-    and node.get("checkable") == "false"
-    and node.get("checked") == "false"
-    and node.get("clickable") == "false"
-    and node.get("enabled") == "true"
-    and node.get("focusable") == "true"
-    and node.get("focused") == "false"
-    and node.get("scrollable") == "false"
-    and node.get("long-clickable") == "false"
-    and node.get("password") == "false"
-    and node.get("selected") == "false"
-    and node.get("bounds") == "[0,65][158,223]"):
-            
+        node.get("index") == "0" 
+    and node.get("text") == "" 
+    and node.get("resource-id") == "" 
+    and node.get("class") == "android.view.ViewGrou" 
+    and node.get("package") == "com.google.android.apps.youtube.music" 
+    and node.get("content-desc") == "" 
+    and node.get("checkable") == "false" 
+    and node.get("checked") == "false" 
+    and node.get("clickable") == "true" 
+    and node.get("enabled") == "true" 
+    and node.get("focusable") == "true" 
+    and node.get("focused") == "false" 
+    and node.get("scrollable") == "false" 
+    and node.get("long-clickable") == "true" 
+    and node.get("password") == "false" 
+    and node.get("selected") == "false" 
+  
+):
             clickable_nodes.append(node)
 
         for child in node.findall("node"):
@@ -37,7 +37,7 @@ def extract_clickable_nodes(xml_file):
     find_clickable_nodes(root)
     return clickable_nodes
 
-def draw_bounding_boxes(image_path, xml_file, output_path="C:/Users/bob/Documents/teste.png", scale_percent=50):
+def draw_bounding_boxes(image_path, xml_file, output_path=r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\anotado.png", scale_percent=50):
     image = cv2.imread(image_path)
 
     # Extrai os elementos clicáveis do XML
@@ -73,8 +73,8 @@ def draw_bounding_boxes(image_path, xml_file, output_path="C:/Users/bob/Document
 
 # Caminhos dos arquivos
 
-image_path = r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\20250615_215132.png"
-xml_file = r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\20250615_215132.xml"
+image_path = r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\20250916_103957.png"
+xml_file = r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\20250916_103957.xml"
 
 # Executar o script para desenhar os bounding boxes e redimensionar a imagem
 draw_bounding_boxes(image_path, xml_file, scale_percent=20)  # Resize para 50% do tamanho original
