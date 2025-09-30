@@ -50,7 +50,7 @@ def query_llama(xml_path, image_path, element_hint="três pontinhos / more optio
         return "Nenhum candidato encontrado."
 
     # monta candidatos numerados
-    '''numbered = []
+    numbered = []
     for i, cand in enumerate(candidates):
         attrs = " ".join([f'{k}="{v}"' for k, v in cand.items()])
         numbered.append(f"[{i}] <node {attrs} />")
@@ -103,13 +103,13 @@ Tarefa:
                 nodes.append(f"<node {attrs} />")
         return "\n".join(nodes) if nodes else f"Índices inválidos retornados: {raw}"
     except Exception:
-        return f"Resposta não numérica: {raw}"'''
+        return f"Resposta não numérica: {raw}"
 
 if __name__ == "__main__":
     print("Entrando")
 
-    xml_file = r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\20250916_103957.xml"
-    img_file = r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\20250916_103957.png"
+    xml_file = r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\20250916_104016.xml"
+    img_file = r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\20250916_104016.png"
 
     print("pergunta")
     result = query_llama(xml_file, img_file)
