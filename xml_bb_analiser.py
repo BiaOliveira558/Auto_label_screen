@@ -11,11 +11,11 @@ def extract_clickable_nodes(xml_file):
     def find_clickable_nodes(node):
         
         if (
-        node.get("index") == "0" 
+        node.get("index") == "2" 
     and node.get("text") == "" 
     and node.get("resource-id") == "" 
-    and node.get("class") == "android.view.ViewGrou" 
-    and node.get("package") == "com.google.android.apps.youtube.music" 
+    and node.get("class") == "android.widget.Button" 
+    and node.get("package") == "com.google.android.apps.classroom" 
     and node.get("content-desc") == "" 
     and node.get("checkable") == "false" 
     and node.get("checked") == "false" 
@@ -24,7 +24,7 @@ def extract_clickable_nodes(xml_file):
     and node.get("focusable") == "true" 
     and node.get("focused") == "false" 
     and node.get("scrollable") == "false" 
-    and node.get("long-clickable") == "true" 
+    and node.get("long-clickable") == "false" 
     and node.get("password") == "false" 
     and node.get("selected") == "false" 
   
@@ -73,8 +73,8 @@ def draw_bounding_boxes(image_path, xml_file, output_path=r"C:\Users\bob\Documen
 
 # Caminhos dos arquivos
 
-image_path = r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\20250916_103957.png"
-xml_file = r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\20250916_103957.xml"
+image_path = r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\20250615_215132.png"
+xml_file = r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\20250615_215132.xml"
 
 # Executar o script para desenhar os bounding boxes e redimensionar a imagem
 draw_bounding_boxes(image_path, xml_file, scale_percent=20)  # Resize para 50% do tamanho original

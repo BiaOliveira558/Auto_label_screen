@@ -2,7 +2,7 @@ import requests, json, re, base64
 import xml.etree.ElementTree as ET
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL = "qwen2.5vl:32b"   # agora VLM, aceita imagem
+MODEL = "llava:13b"   # modelo VLM (aceita imagem)
 
 # ordem padrão dos atributos do dump para remontar a tag
 ATTR_ORDER = [
@@ -11,9 +11,16 @@ ATTR_ORDER = [
     "scrollable","long-clickable","password","selected","bounds"
 ]
 
-# palavras-chave para identificar "more options"
-INCLUDE_HINTS = ["more options", "mais opções", "opções", "⋮", "..."]
-
+# Palavras-chave (atualizadas)
+INCLUDE_HINTS = [
+    "more options", 
+    "mais opções", 
+    "More Actions", 
+    "more_actions_button", 
+    "⋮", 
+    "...",
+    "Mais ações"
+]
 def load_image_as_base64(path):
     with open(path, "rb") as f:
         return base64.b64encode(f.read()).decode("utf-8")
@@ -33,19 +40,34 @@ def extract_overflow_candidates(xml_path):
     tree = ET.parse(xml_path)
     root = tree.getroot()
     candidates = []
+    
     for node in root.iter("node"):
+        
         if node.get("clickable") != "true":
             continue
+        
         text = (node.get("text") or "").strip().lower()
+        content_desc = (node.get("content-desc") or "").strip().lower()
+        
         if text != "":
+            continue 
+            
+        is_keyword_match = any(hint.lower() in content_desc for hint in INCLUDE_HINTS)
+
+       
+        if content_desc != "" and not is_keyword_match:
             continue
+        
+
         candidates.append(node.attrib)
+        
     return candidates
 
 def query_llama(xml_path, image_path, element_hint="três pontinhos / more options"):
     print("entrou função query")
     candidates = extract_overflow_candidates(xml_path)
     print(candidates)
+    
     if not candidates:
         return "Nenhum candidato encontrado."
 
@@ -61,24 +83,21 @@ def query_llama(xml_path, image_path, element_hint="três pontinhos / more optio
 
     print("prompt")
     prompt = f"""
-Você é um assistente de automação de testes.
+Você é um Assistente de Automação de Testes altamente especializado em análise de interfaces e coordenadas. Sua única tarefa é identificar e retornar a tag XML correta.
 
-Aqui estão os nós candidatos numerados do dump XML (cada linha já mostra o nó completo):
+Input:
+- Captura de tela da interface.
+- Lista de Nós XML (`{xml_excerpt}`).
+- Elemento Alvo: **Ícone "Mais Opções" (3 pontinhos/more options)**.
 
-{xml_excerpt}
+Instruções:
+1. **Análise de Localização:** Use seu conhecimento de design de interfaces para determinar onde o Ícone "Mais Opções" (que **geralmente fica no canto superior direito**) está **visualmente** localizado na captura de tela.
+2. **Prioridade em Coordenadas:** Compare **RIGOROSAMENTE** essa localização visual esperada com o atributo `bounds="[x1,y1][x2,y2]"` de **CADA** nó candidato na lista.
+3. **Seleção Única:** Selecione **APENAS UM NÓ** da lista que representa o Ícone "Mais Opções". O ícone aparece **SOMENTE UMA VEZ**.
+4. **Não invente nós.** A seleção deve ser **EXCLUSIVA** da lista de entrada.
+5. **Formato de Saída (Regra Absoluta):** A saída **DEVE ser uma única linha** contendo **SOMENTE a *tag* XML completa** (`<node ... />`), exatamente como está na lista.
+6. **Não inclua justificativas, explicações ou qualquer texto extra.**
 
-E aqui está a captura de tela da interface.
-
-Tarefa:
-- Identifique qual ou quais desses nós correspondem ao ícone "{element_hint}".
-- Baseie sua escolha principalmente na posição dos elementos (atributo `bounds`) em relação à imagem fornecida.
-- Pode haver múltiplas ocorrências do ícone.
-- Se baseie muito na localização dos ícones da imagem de input
-
-⚠️ Instruções obrigatórias:
-1. Responda apenas com os números dos índices correspondentes, separados por vírgula (exemplo: 0,2,5).
-2. Não escreva explicações, não repita os nós em XML e não acrescente palavras como "Resposta:".
-3. Se nenhum nó corresponder, responda exatamente com: NADA
 """
 
     data = {
@@ -93,23 +112,17 @@ Tarefa:
     out = resp.json()
     raw = out.get("response", "").strip()
 
-    # pode retornar múltiplos índices
-    try:
-        indices = [int(x.strip()) for x in raw.split(",") if x.strip().isdigit()]
-        nodes = []
-        for idx in indices:
-            if 0 <= idx < len(candidates):
-                attrs = " ".join([f'{k}="{v}"' for k, v in candidates[idx].items()])
-                nodes.append(f"<node {attrs} />")
-        return "\n".join(nodes) if nodes else f"Índices inválidos retornados: {raw}"
-    except Exception:
-        return f"Resposta não numérica: {raw}"
+    #Validação: deve retornar APENAS um <node ... />
+    if raw.startswith("<node") and raw.endswith("/>"):
+        return raw
+    else:
+        return f"Resposta inválida: {raw}"
 
 if __name__ == "__main__":
     print("Entrando")
 
-    xml_file = r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\20250916_104016.xml"
-    img_file = r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\20250916_104016.png"
+    xml_file = r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\20250916_104049.xml"
+    img_file = r"C:\Users\bob\Documents\AutoLabelScreen\detect_element_screen\teste\20250916_104049.png"
 
     print("pergunta")
     result = query_llama(xml_file, img_file)
