@@ -1,5 +1,7 @@
 import requests, base64, xml.etree.ElementTree as ET, re, os, cv2
 from typing import Dict, Any, List
+import time
+
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL = "llava:13b"
@@ -41,12 +43,12 @@ def mark_node_on_image(node_attrs: Dict[str, str], image_path: str, output_dir: 
     cv2.imwrite(output_path, image)
     print(f"Imagem anotada salva em: {output_path}")
 
-    width = int(image.shape[1] * scale_percent / 100)
-    height = int(image.shape[0] * scale_percent / 100)
-    resized = cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA)
-    cv2.imshow("Elemento Marcado", resized)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    #width = int(image.shape[1] * scale_percent / 100)
+    #height = int(image.shape[0] * scale_percent / 100)
+    #resized = cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA)
+    #cv2.imshow("Elemento Marcado", resized)
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
 
     return output_path
 
@@ -129,10 +131,39 @@ Lista de nós candidatos:
         "images": [img_b64],
         "stream": False
     }
-
+    start_time = time.time()
+    
     resp = requests.post(OLLAMA_URL, json=data)
+    
+    end_time = time.time()
+    # ----------------------------------------------------
+    # >>> FIM DA MEDIÇÃO DE LATÊNCIA <<<
+    # ----------------------------------------------------
+    
+    total_latency = end_time - start_time
+    
     resp.raise_for_status()
-    raw = resp.json().get("response", "").strip()
+    out = resp.json() # Armazena a resposta JSON completa
+    
+    # 🐛 CORREÇÃO APLICADA AQUI: Usa a variável 'out' definida acima
+    raw = out.get("response", "").strip() 
+
+    # --- SAÍDA DA MÉTRICA DE LATÊNCIA ---
+    print(f"\n=======================================================")
+    print(f"**MÉTRICA DE LATÊNCIA: Tempo total da Requisição:** {total_latency:.2f} segundos")
+    
+    # Opcional: Latência por Token (Métrica mais detalhada do Ollama)
+    eval_duration = out.get("eval_duration") # Tempo de avaliação do modelo (em nanosegundos, geralmente)
+    eval_count = out.get("eval_count")        # Tokens gerados
+    
+    if eval_duration and eval_count:
+        # 1e9 para converter nanosegundos para segundos
+        eval_duration_sec = eval_duration / 1e9 
+        latency_per_token = eval_duration_sec / eval_count
+        print(f"[Latência Detalhada: {latency_per_token * 1000:.2f} ms/token (Total: {eval_count} tokens)]")
+    
+    print(f"=======================================================\n")
+    # --- FIM DA SAÍDA DA MÉTRICA ---
 
     match = re.search(r"<node\b[^>]+/>", raw)
     if not match:

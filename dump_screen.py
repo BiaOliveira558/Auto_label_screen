@@ -6,8 +6,8 @@ from datetime import datetime
 
 def capture_screen():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    image_name = f"C:/Users/bob/Documents/AutoLabelScreen/detect_element_screen/teste/{timestamp}.png"
-    dump_name = f"/Users/bob/Documents/AutoLabelScreen/detect_element_screen/teste/{timestamp}.xml"
+    image_name = f"C:/Users/bob/Documents/AutoLabelScreen/detect_element_screen/teste/images/{timestamp}.png"
+    dump_name = f"/Users/bob/Documents/AutoLabelScreen/detect_element_screen/teste/xmls/{timestamp}.xml"
 
     # Captura de tela
     os.system("adb shell screencap -p /sdcard/screenshot.png")
@@ -61,10 +61,10 @@ def save_annotations(annotation_file, elements):
 if __name__ == "__main__":
     img_file, dump_file = capture_screen()
     elements = parse_dump(dump_file)
-    annotated_img = draw_bounding_boxes(img_file, elements)
-    annotation_file = img_file.replace(".png", ".txt")
-    save_annotations(annotation_file, elements)
+    #annotated_img = draw_bounding_boxes(img_file, elements)
+    #annotation_file = img_file.replace(".png", ".txt")
+    #save_annotations(annotation_file, elements)
 
     print(f"Imagem original salva em: {img_file}")
-    print(f"Imagem anotada salva em: {annotated_img}")
-    print(f"Arquivo de marcação salvo em: {annotation_file}")
+    #print(f"Imagem anotada salva em: {annotated_img}")
+    #print(f"Arquivo de marcação salvo em: {annotation_file}")
